@@ -1,0 +1,7 @@
+points.py pydna.py should be in python ~/Software/python/ of each computer the code will be run on
+
+dummydna.hoomd, run.py, job_script should be in the direcotry that the simulation is run from
+
+edit the run.py script for the simmulation you would like to run 
+then execute python run.py
+
