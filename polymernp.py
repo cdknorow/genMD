@@ -1,4 +1,4 @@
-
+#chris knorowski 2013
 # -*- coding: utf-8 -*-
 # This code will make an xyz script for a sphere and add polymers to the ends
 # this will then be read into packmol through sphere.in

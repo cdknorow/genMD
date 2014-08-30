@@ -1,3 +1,4 @@
+#author Chris Knorowski 2013
 # -*- coding: utf-8 -*-
 # This code will make an xyz script for a sphere and add polymers to the ends
 # this will then be read into packmol through sphere.in
@@ -213,7 +214,12 @@ def make_sphere_soft(loop,F=[10],T=[1.2],P=10000000,A=27,B=27,r=3.0,rb=3.0,
                 ####################
                 # Write XML file 
                 ####################
-                Lstart=points.inside_box(L/2.0,open('dna.xyz','r'))
+                dna_L = open('dna.xyz','r')
+                Lstart=points.inside_box(10,dna_L)
+                dna_L.close()
+                print '####################'
+                print Lstart
+                print '####################'
                 Runs['Lx'] = '(0,%f),(2e5,%f)'%(max(Lstart),L)
                 #read input script and parce it into an xml file
                 #numsphere is +1 because there is a point in the middle

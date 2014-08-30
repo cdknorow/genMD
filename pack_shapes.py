@@ -1,3 +1,4 @@
+#author chris Knorowski 2013
 import os
 import sys
 import numpy as np
@@ -10,55 +11,6 @@ from make_bcc import make_bcc
 #\param shape array containing the shape data positions
 #\param N array containing the number of each shape to create
 #\param delta the spacing between each shape
-#def pack_shape(shape, N, delta=10, save = 'dna.xyz'):
-#    total = 0
-#    N_total = 0
-#    pick = []
-#    for i in range(len(shape)):
-#        total+=len(shape[i])*N[i]
-#        N_total += N[i]
-#        pick.extend([i for k in range(N[i])])
-#    fid = open(save,'w')
-#    fid.write('%i\n\n'%(total))
-#    count = 0
-#    kr = 0
-#    places = []
-#    places_total =[]
-#    while count < N_total:
-#        if len(places) == 0:
-#            x = range(-kr-1,kr+2)
-#            y = range(-kr-1,kr+2)
-#            z = range(-kr-1,kr+2)
-#            for i in x:
-#                for j in y:
-#                    for k in z:
-#                        if [i,j,k] not in places_total:
-#                            places.append([i,j,k])
-#                            places_total.append([i,j,k])
-#                        else:
-#                            pass
-#            kr+=1
-#            print 'adding k' 
-#            print kr
-#        r = random.randrange(len(places))
-#        pick_random = random.randrange(len(pick))
-#        pr = pick[pick_random]
-#        del pick[pick_random]
-#        #write the entire shape
-#        for s in range(len(shape[pr])):
-#            name = shape[pr][s][3]['name']
-#            p1 = np.array([shape[pr][s][0],shape[pr][s][1],shape[pr][s][2]])
-#            p_translate = np.array([delta*places[r][0],delta*places[r][1],delta*places[r][2]])
-#            p = p1 - p_translate
-#            fid.write('%s %.4f %.4f %.4f\n'%(name,p[0],p[1],p[2]))
-#        del places[r]
-#        count += 1
-#        print count
-#    fid.close()
-
-
-
-
 def pack_shape(shape, N, delta=10, save = 'dna.xyz'):
     total = 0
     N_total = 0

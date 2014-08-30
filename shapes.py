@@ -1,3 +1,4 @@
+#chris knorowski 2013
 from add_dna import *
 import random
 import numpy as np
@@ -300,7 +301,6 @@ class makeNP_sphere_soft(makeNP):
                 p2 = np.array([self.ssDNA[j][0],self.ssDNA[j][1],self.ssDNA[j][2]])
                 d = points.distance(p1,p2)
                 if d < 1.2 and i != j:
-                        print d
                         if d <.91:
                             if sorted([i,j]) not in nsbonds_short:
                                 nsbonds_short.append(sorted([i,j]))

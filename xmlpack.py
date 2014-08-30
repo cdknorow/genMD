@@ -1,3 +1,4 @@
+#chris knorowski 2013
 import sys
 import os
 

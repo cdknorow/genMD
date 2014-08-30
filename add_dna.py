@@ -1,3 +1,4 @@
+#author chris Knorowski 2013
 import points
 # writes out polymers at points on the sphere where x,y,z are the point on sphere
 # and vx,vy,vz are the vector direction to put the polymer

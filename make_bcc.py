@@ -1,3 +1,4 @@
+#author Chris Knorowski 2013
 ## \package MD.unit.make_bcc 
 # \brief This module is used to generate a unit cell of cscl bcc crystall
 # 

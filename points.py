@@ -1,3 +1,4 @@
+#author chris knorowski 2013
 #######################################################################
 # the purpose of this code is to compare be a module for analyzing point data. 
 # emphasis being on all particles
@@ -87,26 +88,24 @@ def get_all(x,y,z,cord,inputfile):
 			count=count+1
 #find the farthest out atom and set L to that width
 def inside_box(L,inputfile):
-	print 'Finding Furthest Particles in Box'
-	inputfile.readline()
-	inputfile.readline()
-	x=L
-	y=L
-	z=L
-	for line in inputfile:
-		row = line.split()
-		if x<abs(float(row[1])):
-			x=abs(float(row[1]))
-		if y<abs(float(row[2])):
-			y=abs(float(row[2]))
-		if z<abs(float(row[3])):
-			z=abs(float(row[3]))
-	L=max(y,z,x)
-	L=L*2.0+1.0
-	print 'Setting L equal To:\n'
-	print L
-	print '\n'
-	return [x*2,y*2,z*2]
+    print 'Finding Furthest Particles in Box'
+    inputfile.readline()
+    inputfile.readline()
+    x=L
+    y=L
+    z=L
+    for line in inputfile:
+        row = line.split()
+        if x<abs(float(row[1])):
+            x=abs(float(row[1]))
+        if y<abs(float(row[2])):
+            y=abs(float(row[2]))
+        if z<abs(float(row[3])):
+            z=abs(float(row[3]))
+    L=max(y,z,x)+1
+    L=L*2.0+9.0
+    print 'Setting L equal To: L'
+    return [L,L,L]
 #######################################################################
 # find the distances between two points whithout periodic boundary conditons
 #######################################################################
