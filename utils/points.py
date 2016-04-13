@@ -31,7 +31,7 @@ def get_vars(N_poly,N_line,inputfile):
 	#input/output 
 	pathname = os.getcwd()
 	s=string.split(pathname,'/')
-	print s
+	print(s)
 	
 	###Variables
 	#get n_poly number of polymers 
@@ -88,7 +88,7 @@ def get_all(x,y,z,cord,inputfile):
 			count=count+1
 #find the farthest out atom and set L to that width
 def inside_box(L,inputfile):
-    print 'Finding Furthest Particles in Box'
+    print( 'Finding Furthest Particles in Box')
     inputfile.readline()
     inputfile.readline()
     x=L
@@ -104,7 +104,7 @@ def inside_box(L,inputfile):
             z=abs(float(row[3]))
     L=max(y,z,x)+1
     L=L*2.0+9.0
-    print 'Setting L equal To: L'
+    print( 'Setting L equal To: L')
     return [L,L,L]
 #######################################################################
 # find the distances between two points whithout periodic boundary conditons

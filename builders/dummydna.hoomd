@@ -4,7 +4,7 @@ import sys
 import os
 
 directory =  "FOLDER"
-print directory
+print( directory
 ######################################################
 ## Get Initial XML FILE
 ######################################################
@@ -40,7 +40,7 @@ delta= .0075*V_s/V_t
 L=[system.box.Lx]
 for i in range(dt):
 	L.append((N*Vsphere / (rho+i*delta))**(1.0/3.0))
-print L
+print( L
 
  
 

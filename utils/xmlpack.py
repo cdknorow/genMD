@@ -2,58 +2,17 @@
 import sys
 import os
 
-###########################################################
-####  write an input script for packmol with box width, number of A, number of B, and tolerance
-###########################################################
-def packdna(L,N,tolerance=1.8,prebuilt=False):
-    fid=open('dna.inp','w')
-    fid.write(('tolerance %f \n')%(tolerance))
-    fid.write('filetype xyz\noutput dna.xyz\n')
-    for i in range(len(N)):
-        if prebuilt == True and i ==0:
-            fid.write(('\n\n structure nanoparticle%i.xyz\n')%(i+1))
-            fid.write(('  number %i\n')%(N[i]))
-            fid.write(('  fixed 0. 0. 0. 0. 0. 0.\n'))
-            fid.write('end structure\n')
-        else:
-            fid.write(('\n\n structure nanoparticle%i.xyz\n')%(i+1))
-            fid.write(('  number %i\n')%(N[i]))
-            fid.write(('  inside box %d. %d. %d. %d. %d. %d.\n')%(-L/2,-L/2,-L/2,L/2,L/2,L/2))
-            fid.write('end structure\n')
-    fid.close()
-def packdna_linker(L,N,tolerance=1.8,delta=10):
-    fid=open('dna.inp','w')
-    fid.write(('tolerance %f \n')%(tolerance))
-    fid.write('filetype xyz\noutput dna.xyz\n')
-    for i in range(len(N)):
-        if i ==0:
-            fid.write(('\n\n structure nanoparticle%i.xyz\n')%(i+1))
-            fid.write(('  number %i\n')%(N[i]))
-            fid.write(('  fixed 0. 0. 0. 0. 0. 0.\n'))
-            fid.write('end structure\n')
-        elif i == 2:
-            fid.write(('\n\n structure nanoparticle%i.xyz\n')%(i+1))
-            fid.write(('  number %i\n')%(N[i]))
-            fid.write(('  outside box %d. %d. %d. %d. %d. %d.\n')%(-L/2,-L/2,-L/2,L/2,L/2,L/2))
-            fid.write(('  inside box %d. %d. %d. %d. %d. %d.\n')%
-                    (-L/2+delta,-L/2+delta,-L/2+delta,L/2+delta,L/2+delta,L/2+delta))
-            fid.write('end structure\n')
-        else:
-            fid.write(('\n\n structure nanoparticle%i.xyz\n')%(i+1))
-            fid.write(('  number %i\n')%(N[i]))
-            fid.write(('  inside box %d. %d. %d. %d. %d. %d.\n')%(-L/2,-L/2,-L/2,L/2,L/2,L/2))
-            fid.write('end structure\n')
-    fid.close()
 #Make a test for the nucleotides and linkers
 #Write a Nanoparticle file for packmol
 ####################################
 def nanoparticle(NP,name):
-    fid = open(name,'w')
-    fid.write(('%i\n')%(len(NP.ssDNA)))
-    fid.write('Atoms\n')
-    for p in NP.ssDNA:
-	fid.write(('%s %f %f %f\n')%(p[3]['name'],p[0],p[1],p[2]))
-    fid.close()
+    with open(name,'w') as fid:
+        fid.write(('%i\n')%(len(NP.ssDNA)))
+        fid.write('Atoms\n')
+        
+        for p in NP.ssDNA:
+        	fid.write(('%s %f %f %f\n')%(p[3]['name'],p[0],p[1],p[2]))
+
 def dnaxml(L,NP,save='dna.xml',read='dna.xyz'):
     """	Parses the dna.xyz file into an xml scripts and
 
@@ -102,7 +61,6 @@ def dnaxml(L,NP,save='dna.xml',read='dna.xyz'):
     #here we set the rigid body of the nanoparticle and the amino spacer groups
     def body(fid, NP, num, C=0):
         for i in range(num):
-            #print num
             for p in NP.ssDNA:
                 if p[3]['type']==-1:
                     fid.write(('%i\n')%(p[3]['type']))
@@ -206,10 +164,6 @@ def dnaxml(L,NP,save='dna.xml',read='dna.xyz'):
     fid.write('<bond>\n')
     C=0
     for i in NP:
-        print C
-        #print i[0],i[1]
-        #print C
-        print i[0].ssDNA[0]
         bonds(fid, i[0], i[1],C=C)
         C+=len(i[0].ssDNA)*i[1]
     fid.write('</bond>\n')

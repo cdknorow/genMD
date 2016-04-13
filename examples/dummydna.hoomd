@@ -1,0 +1,206 @@
+from hoomd_script import *
+import math
+import sys
+import os
+
+directory =  "FOLDER"
+print( directory
+######################################################
+## Get Initial XML FILE
+######################################################
+system = init.read_xml(filename=directory+"start_dna.xml")
+
+######################################################
+#  Parameters That Can Be Changed by makedna.py
+######################################################
+
+F = change_F
+sig = 0.6
+sp = change_sp
+ln = change_ln
+ndna= change_ndna
+run_time= change_P
+Temp=change_Temp
+R = change_radius
+N = change_N
+rho = change_rho
+
+log_period=2000
+
+# Set up the Box 
+V_t = (R+sp*.84+.5)
+V_s = (R+.5)
+rho_t = .125
+rho = rho_t*V_s/V_t
+
+
+Vsphere = 4*3.14*(R+.5)**3/3
+dt = 10 
+delta= .0075*V_s/V_t
+L=[system.box.Lx]
+for i in range(dt):
+	L.append((N*Vsphere / (rho+i*delta))**(1.0/3.0))
+print( L
+
+ 
+
+######################################################
+#	Bond Setup
+######################################################
+harmonic = bond.harmonic()
+harmonic.set_coeff('polymer', k=330.0, r0=0.84)
+harmonic.set_coeff('NPbond', k=370.0, r0=R)
+harmonic.set_coeff('NPSbond', k=300.0, r0=.9)
+harmonic.set_coeff('NPSbondM', k=300.0, r0=1.0)
+harmonic.set_coeff('NPSbondL', k=300.0, r0=1.1)
+#harmonic.set_coeff('linker', k=330.0, r0=0.84)
+#harmonic.set_coeff('nucleoid', k=330.0, r0=0.84)
+#angle = angle.harmonic()
+#angle.set_coeff('harmonic', k=120.0, t0=3.14)
+#angle.set_coeff('pharmonic', k=120.0, t0=3.14)
+#angle.set_coeff('NPangle', k=120.0, t0=3.14)
+
+######################################################
+#attraction and repulsion parameters
+######################################################
+
+#force field setup
+lj = pair.lj(r_cut=2.75)
+
+def attract(a,b,sigma=1,epsilon=1):
+    #sigma = 'effective radius', alpha='strength'
+    alpha =1.0
+    lj.pair_coeff.set(a,b,epsilon=epsilon*1.0,
+                      sigma=sigma*1.0,
+                      alpha=alpha*1.0)
+
+def repulse(a,b,sigma=1):
+    #sigma = effective radius
+    alpha = 0.0
+    epsilon = 1.0
+    lj.pair_coeff.set(a,b,epsilon=epsilon*1.0,
+                      sigma=sigma*1.0,
+                      alpha=0.0)
+
+#remove M N S repulse everyting
+map(lambda x: repulse(x,'V'),['A','T','C','G','M','N','S','K','F','V','W','P','L'])
+map(lambda x: repulse(x,'W'),['A','T','C','G','M','N','S','K','F','W','P','L'])
+map(lambda x: repulse(x,'N'),['A','T','C','G','M','N','S','K','F','P','L'])
+map(lambda x: repulse(x,'M'),['A','T','C','G','M','K','F','P','L'])
+map(lambda x: repulse(x,'S',0.35),['A','T','C','G','K','F','P'])
+map(lambda x: repulse(x,'S'),['S','M','L'])
+map(lambda x: repulse(x,'L'),['L'])
+map(lambda x: repulse(x,'L'),['A','T','C','G','K','F','P'])
+map(lambda x: repulse(x,'P',sig),['A','T','C','G','K','F','P'])
+
+#GCAT repuslions
+# with a sigma repulsion
+map(lambda x: repulse(x,'A',sig),['G','C','A','K','F'])
+map(lambda x: repulse(x,'G',sig),['G','T','K','F'])
+map(lambda x: repulse(x,'T',sig),['T','C','K','F'])
+map(lambda x: repulse(x,'C',sig),['C','K','F'])
+map(lambda x: repulse(x,'K',sig),['K'])
+map(lambda x: repulse(x,'F',sig),['F'])
+
+
+#GC attract
+#AT attract with a sigma 
+attract('T','A',sig,F)
+attract('G','C',sig,F)
+attract('K','F',sig,F)
+
+
+# dump a .mol2 file for the structure information
+mol2 = dump.mol2()
+mol2.write(filename=directory+'dna.mol2')
+
+nonrigid = group.nonrigid()
+nlist.reset_exclusions(exclusions=['body','bond','angle'])
+nlist.set_params(check_period=1)
+fire = integrate.mode_minimize_fire(group=nonrigid,dt=0.00005)
+run(5e5)
+fire = integrate.mode_minimize_fire(group=nonrigid,dt=0.0005)
+run(5e5)
+fire = integrate.mode_minimize_fire(group=nonrigid,dt=0.005)
+run(2e6)
+del fire
+
+######################################################
+# make group of all rigid particles and of all nonrigid particles
+######################################################
+#integrate of rigid and nonrigid
+nonrigid_integrator=integrate.nvt(group=nonrigid, T=1.4, tau=0.65)
+
+######################################################
+#Dump File
+######################################################
+
+######################################################
+# Equilibrate System
+######################################################
+#set integrate low so that system can equilibrate
+#set the check period very low to let the system equilibrate
+integrate.mode_standard(dt=0.000005)
+nlist.set_params(check_period=1)
+nlist.reset_exclusions(exclusions=['body','bond','angle'])
+run(500000)
+
+######################################################
+#	Heat System Up to Mix/then slowly cool it down
+######################################################
+
+#increase time step so system can mix up faster
+integrate.mode_standard(dt=0.0005)
+
+
+#############################################
+#Zero The momentum
+#############################################
+
+zeroer= update.zero_momentum(period=500000)
+#change the neighborlist check time for boost in performance
+nlist.set_params(check_period=5)
+
+######################################################
+#set integrate back to standard dt
+
+integrate.mode_standard(dt=0.005)   
+
+
+
+####################################################
+#	Log Kinetic Energy and Temperature of System
+####################################################
+
+logger = analyze.log(filename=directory+'mylog.log', period=log_period, quantities=['temperature','potential_energy','kinetic_energy','volume','pressure'])
+
+pressure = analyze.log(filename=directory+'pressure.log', period=log_period, quantities=['pressure',
+			'pressure_xx','pressure_yy','pressure_zz','pressure_xy',
+			'pressure_yz','pressure_xz'])					
+######################################################
+# 	Dumpe Files
+#######################################################
+
+
+
+# xml dump files
+xml = dump.xml(filename=directory+"atoms.dump", period=run_time/2-1)
+xml.set_params(all=True)
+# dump a .dcd file for the trajectory
+groupV = group.type(name='V-particles', type='V')
+dcd = dump.dcd(filename=directory+'dna.dcd', period=500000)
+dcd2 = dump.dcd(filename=directory+'dnaV.dcd',group = groupV, period=5000)
+
+run(run_time)
+
+####################################################
+# Main Run
+###################################################
+nonrigid_integrator.set_params(T=Temp)
+
+for i in range(len(L)):
+	box_resize = update.box_resize(L = variant.linear_interp([(0,system.box.Lx),(2.9e4,L[i])]),period=1000) 
+	run(30000)
+	box_resize.disable()
+	#run the simulation
+	run(run_time)

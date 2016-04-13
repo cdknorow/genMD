@@ -6,12 +6,11 @@ import string
 from numpy import *
 import numpy as np
 import random
-import points
+import genMD.utils.points as points
 
-#####################################
-#  Finds evenly spaced bonds for dna nanoparticles to attatch
-######################################	
+
 def find_bonds(NP,N,r,Ns):
+    """ Finds evenly spaced bonds for dna nanoparticles to attatch"""
     bond_MN=[]
     xp=[]
     yp=[]
@@ -34,12 +33,12 @@ def find_bonds(NP,N,r,Ns):
         bond_MN.append(bond)
     return bond_MN
 ###############################################
-# finds the bonds to be added to rectangle
-# returns bond location in ssDNA and nmber of bonds
-# options: surface,random,edges,center(face center)
+
 #############################
 def find_bonds_square(NP,number,x_length=7,choose='random',cube_number=200):
-    import random
+    """ finds the bonds to be added to rectangle   
+    returns bond location in ssDNA and nmber of bonds
+    options: surface,random,edges,center(face center)"""
     bond_MN=np.array([],dtype=int)
     surfaces=6
     edges=surfaces*2
@@ -48,14 +47,12 @@ def find_bonds_square(NP,number,x_length=7,choose='random',cube_number=200):
     points_on_surface=s_length*s_length
     perface=number/surfaces
     peredge=number/(edges)
-    ##################################################
-    #place bonds randomly all over
-    #################################################
+    
+    #place bonds randomly on a nanoparticle
     if choose=='random':
         bond_MN=random.sample(range(0,len(NP)-1),number)
-    ##########################################################
+
     #place bonds only on edges
-    ############################################################
     if choose=='edges':
         start=surfaces*points_on_surface
         #there are three grouping of edges
@@ -73,9 +70,8 @@ def find_bonds_square(NP,number,x_length=7,choose='random',cube_number=200):
         while bond_MN.shape[0]>number:
             rand=[random.randint(0,bond_MN.shape[0])]
             bond_MN=np.delete(bond_MN,rand)
-    ##############################################################
+
     #writes bonds only on surfaces with equal bonds on each surfac
-    #############################################################e
     if choose=='surface':
         for i in range(surfaces/2):
             count=i*2
@@ -83,14 +79,12 @@ def find_bonds_square(NP,number,x_length=7,choose='random',cube_number=200):
                 count*points_on_surface),axis=1)
             bond_MN=np.concatenate((bond_MN,np.array(random.sample(range(1,points_on_surface*2,2),perface))+
                 count*points_on_surface),axis=1)
-    ###############################################
+    
     #write bonds only at the center of the surfaces
-    ##############################################
     if choose=='center':
         bond_MN=range(len(NP)-7,len(NP)-1)
-    #########################################
-    #
-    ########################################
+
+
     if choose =='bigcube':
         bond_MN=[]
         pts = points_on_cube_edge(x_length)
@@ -152,13 +146,10 @@ def add_bonds_side(bond_MN,side,leave=0,graft=0.5,min_side=15,num_dna=139):
     #loop through all paritcles on sides
     #but skip Z particles
     import random as rand
-    print side
+    
     for i in range(0,len(side),2):
-        print 'side'
-        print i
         count = 0
         for j in range(side[i],side[i+1]):
-            print j
             if j in bond_MN:
                 count+=1
         #set maximum for each side,
@@ -172,11 +163,8 @@ def add_bonds_side(bond_MN,side,leave=0,graft=0.5,min_side=15,num_dna=139):
                 count+=1
     del bond_MN[0]
     if len(bond_MN)<num_dna:
-        print '####################'
-        print len(bond_MN)
-        print "length of bonds is less than desired ssdna"
-        print "#####################"
-        asdfasdf
+        raise Exception("length of bonds is less than desired ssdna")
+
     while len(bond_MN)!=num_dna:
         del bond_MN[random.randint(41,len(bond_MN)-1)]
     return bond_MN
@@ -200,11 +188,8 @@ def add_bonds_wall(bond_MN,side,leave=0,graft=0.5,min_side=15,num_dna=139):
                 count+=1
     del bond_MN[0]
     if len(bond_MN)<num_dna:
-        print '####################'
-        print len(bond_MN)
-        print "length of bonds is less than desired ssdna"
-        print "#####################"
-        asdfasdf
+        raise Exception("length of bonds is less than desired ssdna")
+        
     while len(bond_MN)!=num_dna:
         del bond_MN[random.randint(0,len(bond_MN)-1)]
     return bond_MN

@@ -3,8 +3,8 @@ import os
 import sys
 import numpy as np
 import random
-import points
-from make_bcc import make_bcc
+import genMD.utils.points as points
+from genMD.utils.make_bcc import make_bcc
 
 #\brief generate an initial configuration for any amount of shapes
 #
@@ -40,13 +40,12 @@ def pack_shape(shape, N, delta=10, save = 'dna.xyz'):
                     else:
                         pass
         kr+=1
-        #print 'adding k'
-        #print kr
+        
     count = 0
     if N_total == 1:
         places = [[0,0,0]]
         places_total = [[0,0,0]]
-    #print len(places)
+    #print( len(places)
     while len(places) >= 1:
         r = random.randrange(len(places))
         #write the entire shape
@@ -54,8 +53,7 @@ def pack_shape(shape, N, delta=10, save = 'dna.xyz'):
             pr = 0
         else:
             pr = 1
-        #print pr
-        #print N[0]
+
         for s in range(len(shape[pr])):
             name = shape[pr][s][3]['name']
             p1 = np.array([shape[pr][s][0],shape[pr][s][1],shape[pr][s][2]])
@@ -64,12 +62,12 @@ def pack_shape(shape, N, delta=10, save = 'dna.xyz'):
             fid.write('%s %.4f %.4f %.4f\n'%(name,p[0],p[1],p[2]))
         del places[r]
         count += 1
-        #print count
+        #print( count
     fid.close()
 
 #generate a bcc configuration
 def pack_bcc(shape, L, delta=10, save = 'dna.xyz'):
-    #print len(places)
+    #print( len(places)
     #bcc
     a = delta
     a1 = np.array([-0.5*a,0.5*a,0.5*a])
@@ -78,16 +76,16 @@ def pack_bcc(shape, L, delta=10, save = 'dna.xyz'):
     basis = np.array([a/4.,a/4.,a/4.])
     places = make_bcc(a1,a2,a3,basis,L,S=15,name='qlattice.xyz')
     fid = open(save,'w')
-    print len(shape)
+    print( len(shape))
     total = places[0].shape[0]*len(shape)
     fid.write('%i\n\n'%(total))
-    print places[0].shape
+    print( places[0].shape)
     for point in places[0]:
         for s in range(len(shape)):
             name = shape[s][3]['name']
             p = np.array([shape[s][0],shape[s][1],shape[s][2]]) +  point
             fid.write('%s %.4f %.4f %.4f\n'%(name,p[0],p[1],p[2]))
-    #print count
+    #print( count
     fid.close()
     return places[0].shape[0]
 
@@ -100,15 +98,15 @@ def pack_fcc(shape, L, delta=10, save = 'dna.xyz'):
     basis = np.array([a/4.,a/4.,a/4.])
     places = make_bcc(a1,a2,a3,basis,L,S=15,name='qlattice.xyz')
     fid = open(save,'w')
-    print len(shape)
+    print( len(shape))
     total = places[0].shape[0]*len(shape)
     fid.write('%i\n\n'%(total))
-    print places[0].shape
+    print( places[0].shape)
     for point in places[0]:
         for s in range(len(shape)):
             name = shape[s][3]['name']
             p = np.array([shape[s][0],shape[s][1],shape[s][2]]) +  point
             fid.write('%s %.4f %.4f %.4f\n'%(name,p[0],p[1],p[2]))
-    #print count
+    #print( count
     fid.close()
     return places[0].shape[0]

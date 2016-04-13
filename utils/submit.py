@@ -22,11 +22,13 @@ def change_var(Runs,i,j,fileread,filewrite,filename):
     s = s.replace('change_Temp',str(Runs['T'][j]))
     s = s.replace('FOLDER',filewrite.split('/')[-2]+'/')
     fid.write(('%s')%(s))
+
 #submits a job,changes to the new directory and submits a job from there, then goes back 
 def qsub(filewrite):
 	os.chdir(filewrite)
-	os.system('qsub job_script')
+	#os.system('qsub job_script')
 	os.chdir('../')
+
 #creates files in new directorys and then submits jobs
 #Changes variables so that they are the proper ones
 def subj(Runs):
@@ -53,6 +55,7 @@ def subj(Runs):
 			change_var(Runs,i,j,inputfile3,filewrite,'job_script')
 			#Sumbit the job in the directory
 			qsub(filewrite)
+
 #Changes variables so that they are the proper ones
 def subj_binary(Runs,Runs2):
 	pathname = os.path.dirname(sys.argv[0])
@@ -62,7 +65,7 @@ def subj_binary(Runs,Runs2):
 		for j in range(len(Runs['T'])):
 			inputfile = open(filepath+"/dna.xml",'r')
 			inputfile2 = open(filepath+"/dummydna.hoomd",'r')
-			inputfile3 = open(filepath+"/job_script",'r')	
+			#inputfile3 = open(filepath+"/job_script",'r')	
 			count=1
 			filewrite=str(filepath+'/'+'F_'+str(Runs['F'][i])+'_Asp_'+
                     str(Runs['n_s'])+'_ln_'+str(Runs['n_l'])+'_ndna'+str(Runs['num_dna'])+
@@ -77,16 +80,17 @@ def subj_binary(Runs,Runs2):
 			#Change the values in the rigid_dna.hoomd file to the values you want to run
 			change_var(Runs,i,j,inputfile2,filewrite,'rigid_dna.hoomd')
 			#Change the name of the job script to keep track of things
-			change_var(Runs,i,j,inputfile3,filewrite,'job_script')
+			#change_var(Runs,i,j,inputfile3,filewrite,'job_script')
 			#Sumbit the job in the directory
 			qsub(filewrite)
-## PRINTS ALL OF THE VARIABLES OUT		
+			
+## print(S ALL OF THE VARIABLES OUT		
 def print_vars(Runs):
-	print '\n############################\nFile written to dna.xml'
-	print '\n########################\n nanoparticle radius = %i'%Runs['r']
-	print ' \n Nanoparticles = %i'%Runs['n_sphere']
-	print '\n Number of DNA = %i'%Runs['num_dna']
-	print '\n Number of Spacers = %i'%Runs['n_s']
-	print '\n Number of Linkers = %i'%Runs['n_l']
-	print '\n Box Length = %i'%Runs['L']
-	print '\n\n########################\n'
+	print( '\n############################\nFile written to dna.xml')
+	print( '\n########################\n nanoparticle radius = %i'%Runs['r'])
+	print( ' \n Nanoparticles = %i'%Runs['n_sphere'])
+	print( '\n Number of DNA = %i'%Runs['num_dna'])
+	print( '\n Number of Spacers = %i'%Runs['n_s'])
+	print( '\n Number of Linkers = %i'%Runs['n_l'])
+	print( '\n Box Length = %i'%Runs['L'])
+	print( '\n\n########################\n')

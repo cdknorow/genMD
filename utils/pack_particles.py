@@ -18,12 +18,13 @@ class read_particle():
                 s = i.split()
                 if len(s) == 4:
                     self.M[-1].append([s[0],float(s[1]),float(s[2]),float(s[3])])
+                    
     def write_particles(self, L, spacing=5, lane=5, bead =5):
         out = open('dna.xyz','w')
         p = sum(self.num_particles)
         points = []
         count = 0
-        #print len(self.M[0])
+        #print( len(self.M[0])
         for i in range(lane):
             for j in range(lane):
                 for k in range(lane):
@@ -40,8 +41,8 @@ class read_particle():
         for point in points:
                 out.write('%s %.2f %.2f %.2f\n'%(point[0],point[1],
                     point[2],point[3]))
-        #print len(self.M[0])
-        #print count
+        #print( len(self.M[0])
+        #print( count
 
 
 
